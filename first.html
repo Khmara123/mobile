@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Здоровое питание</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        nav {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        nav li {
+            margin: 0 15px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #2E7D32;
+        }
+        
+        section {
+            padding: 40px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4CAF50;
+        }
+        
+        .intro {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        
+        .food-categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .category {
+            flex: 1 1 300px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .category-content {
+            padding: 20px;
+        }
+        
+        .category h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .tips {
+            background-color: #E8F5E9;
+            padding: 40px;
+            border-radius: 8px;
+        }
+        
+        .tips ul {
+            list-style-position: inside;
+            padding-left: 20px;
+        }
+        
+        .tips li {
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Здоровое питание</h1>
+            <p>Правильное питание - это основа вашего здоровья и хорошего самочувствия</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#importance">Важность</a></li>
+                <li><a href="#products">Полезные продукты</a></li>
+                <li><a href="#tips">Советы</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <section id="importance">
+            <h2 class="section-title">Почему важно питаться правильно?</h2>
+            <div class="intro">
+                <p>Здоровое питание обеспечивает организм всеми необходимыми питательными веществами, витаминами и минералами. Оно помогает поддерживать оптимальный вес, укрепляет иммунную систему, повышает уровень энергии и снижает риск развития хронических заболеваний.</p>
+                <p>Сбалансированный рацион влияет не только на физическое, но и на mental здоровье, улучшая настроение и когнитивные функции.</p>
+            </div>
+        </section>
+        
+        <section id="products">
+            <h2 class="section-title">Полезные продукты</h2>
+            <div class="food-categories">
+                <div class="category">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Овощи">
+                    <div class="category-content">
+                        <h3>Овощи</h3>
+                        <p>Богаты витаминами, минералами и клетчаткой. Старайтесь употреблять разноцветные овощи для получения максимальной пользы.</p>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <img src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Фрукты">
+                    <div class="category-content">
+                        <h3>Фрукты и ягоды</h3>
+                        <p>Натуральный источник витаминов, антиоксидантов и клетчатки. Лучше употреблять в свежем виде.</p>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Злаки">
+                    <div class="category-content">
+                        <h3>Цельные злаки</h3>
+                        <p>Овёс, киноа, бурый рис и другие цельные злаки богаты клетчаткой и сложными углеводами.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="tips">
+            <h2 class="section-title">Советы по здоровому питанию</h2>
+            <div class="tips">
+                <ul>
+                    <li>Пейте достаточное количество воды в течение дня</li>
+                    <li>Ешьте небольшими порциями 4-5 раз в день</li>
+                    <li>Ограничьте потребление processed foods и сахара</li>
+                    <li>Включайте в рацион разнообразные белки: рыбу, птицу, бобовые</li>
+                    <li>Не пропускайте завтрак - это самый важный прием пищи</li>
+                    <li>Готовьте пищу на пару, гриле или запекайте вместо жарки</li>
+                    <li>Внимательно читайте этикетки продуктов</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>© 2023 Страница о здоровом питании. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>
