@@ -96,7 +96,7 @@ class HomePage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const CircleAvatar(radius: 30),
-        Container(height: 50, width: 200),
+        SizedBox(height: 50, width: 200),
       ],
     );
   }
