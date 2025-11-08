@@ -1,23 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // для GoRouter
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'supabase_test_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://cirljvnifsjeqelaarjd.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmxqdm5pZnNqZXFlbGFhcmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MTAwOTIsImV4cCI6MjA3ODE4NjA5Mn0.VKCuMCeeLsbF80p1D7M5GNkZwN1___uxn57uV_9Tm94',
+    debug: true,
+  );
+
   runApp(const MyApp());
 }
 
-// Корневой виджет приложения
+// Настройка маршрутизатора GoRouter (для лабораторной №2 и №3)
+final GoRouter router = GoRouter(
+  routes: [
+    GoRoute(path: '/', builder: (context, state) => const HomePage()),
+    GoRoute(path: '/second', builder: (context, state) => const SecondPage()),
+    // 🔹 Новый маршрут для лабораторной №3 (Supabase)
+    GoRoute(
+      path: '/supabase',
+      builder: (context, state) => const SupabaseTestPage(),
+    ),
+  ],
+);
+
+// Основное приложение
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    // ✅ Используем MaterialApp.router для GoRouter
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: HomePage(), // теперь это главная страница
+      routerConfig: router,
     );
   }
 }
 
-// Главная страница приложения
+// Главная страница
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -32,13 +58,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget calendarItem() {
-    return Column(
-      children: const [
-        Text("date"),
-        Text("date2"),
-        Text("date3"),
-      ],
-    );
+    return Column(children: const [Text("date"), Text("date2"), Text("date3")]);
   }
 
   Widget calendar() {
@@ -67,11 +87,7 @@ class HomePage extends StatelessWidget {
   Widget currencyMenu() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        currencyMenuItem(),
-        currencyMenuItem(),
-        currencyMenuItem(),
-      ],
+      children: [currencyMenuItem(), currencyMenuItem(), currencyMenuItem()],
     );
   }
 
@@ -80,10 +96,7 @@ class HomePage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const CircleAvatar(radius: 30),
-        Container(
-          height: 50,
-          width: 200,
-        ),
+        Container(height: 50, width: 200),
       ],
     );
   }
@@ -91,13 +104,16 @@ class HomePage extends StatelessWidget {
   Widget headerContent() {
     return Row(
       children: [
-        Column(
-          children: const [
-            SizedBox(height: 15),
-            SizedBox(width: 100, child: Text("first text")),
-            SizedBox(width: 100, child: Text("second text")),
-            SizedBox(height: 15),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              SizedBox(height: 15),
+              SizedBox(width: 100, child: Text("first text")),
+              SizedBox(width: 100, child: Text("second text")),
+              SizedBox(height: 15),
+            ],
+          ),
         ),
       ],
     );
@@ -110,13 +126,12 @@ class HomePage extends StatelessWidget {
         color: Colors.red,
         image: DecorationImage(
           image: NetworkImage(
-              'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
+          ),
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        children: [headerTop(), headerContent()],
-      ),
+      child: Column(children: [headerTop(), headerContent()]),
     );
   }
 
@@ -124,6 +139,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Главная страница')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('FAB нажата'); // демонстрация свойства onPressed
+        },
+        child: const Icon(Icons.add),
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,16 +158,35 @@ class HomePage extends StatelessWidget {
             currencyList(),
             const SizedBox(height: 40),
             Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // вот теперь контекст работает правильно!
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SecondPage()),
-                  );
-                },
-                child: const Text('Перейти на вторую страницу'),
+              child: Column(
+                children: [
+                  // ✅ Лабораторная №1 — базовая навигация
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SecondPage(),
+                        ),
+                      );
+                    },
+                    child: const Text('Перейти (Navigator.push)'),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // ✅ Лабораторная №2 — Named routes (через GoRouter)
+                  ElevatedButton(
+                    onPressed: () {
+                      context.go('/second');
+                    },
+                    child: const Text('Перейти (GoRouter)'),
+                  ),
+                  // ✅ Лабораторная №3 — работа с Supabase
+                  ElevatedButton(
+                    onPressed: () => context.go('/supabase'),
+                    child: const Text('Проверить Supabase (ЛР3)'),
+                  ),
+                ],
               ),
             ),
           ],
@@ -170,11 +210,22 @@ class SecondPage extends StatelessWidget {
           children: [
             const Text('Это вторая страница!', style: TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
+
+            // ✅ Возврат (Navigator.pop)
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // вернуться назад
+                Navigator.pop(context);
               },
-              child: const Text('Назад'),
+              child: const Text('Назад (Navigator.pop)'),
+            ),
+            const SizedBox(height: 10),
+
+            // ✅ Возврат через GoRouter
+            ElevatedButton(
+              onPressed: () {
+                context.go('/');
+              },
+              child: const Text('Назад (GoRouter)'),
             ),
           ],
         ),
