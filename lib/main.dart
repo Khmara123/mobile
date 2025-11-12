@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // для GoRouter
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_test_page.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'auth_page.dart'; // ✅ подключаем страницу авторизации
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +18,19 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// Настройка маршрутизатора GoRouter (для лабораторной №2 и №3)
+// ✅ Настройка маршрутизатора GoRouter (теперь добавлен AuthPage)
 final GoRouter router = GoRouter(
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomePage()),
+    // 🔹 Стартовая страница — авторизация
+    GoRoute(path: '/', builder: (context, state) => const AuthPage()),
+
+    // 🔹 Главная страница после входа
+    GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+
+    // 🔹 Страница с календарём
     GoRoute(path: '/second', builder: (context, state) => const SecondPage()),
-    // 🔹 Новый маршрут для лабораторной №3 (Supabase)
+
+    // 🔹 Страница Supabase (для проверки)
     GoRoute(
       path: '/supabase',
       builder: (context, state) => const SupabaseTestPage(),
@@ -35,15 +44,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Используем MaterialApp.router для GoRouter
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      title: 'Flutter Demo App',
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
     );
   }
 }
 
-// Главная страница
+// -------------------
+// Главная страница (ЛР1–3)
+// -------------------
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -141,7 +153,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Главная страница')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('FAB нажата'); // демонстрация свойства onPressed
+          print('FAB нажата');
         },
         child: const Icon(Icons.add),
       ),
@@ -160,28 +172,13 @@ class HomePage extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  // ✅ Лабораторная №1 — базовая навигация
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SecondPage(),
-                        ),
-                      );
-                    },
-                    child: const Text('Перейти (Navigator.push)'),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // ✅ Лабораторная №2 — Named routes (через GoRouter)
                   ElevatedButton(
                     onPressed: () {
                       context.go('/second');
                     },
-                    child: const Text('Перейти (GoRouter)'),
+                    child: const Text('Открыть календарь (ЛР2–3)'),
                   ),
-                  // ✅ Лабораторная №3 — работа с Supabase
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => context.go('/supabase'),
                     child: const Text('Проверить Supabase (ЛР3)'),
@@ -196,37 +193,76 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Вторая страница
-class SecondPage extends StatelessWidget {
+// -------------------
+// Вторая страница (с календарём)
+// -------------------
+class SecondPage extends StatefulWidget {
   const SecondPage({super.key});
+
+  @override
+  State<SecondPage> createState() => _SecondPageState();
+}
+
+class _SecondPageState extends State<SecondPage> {
+  DateTime focusedDay = DateTime.now();
+  DateTime? selectedDay;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Вторая страница')),
-      body: Center(
+      appBar: AppBar(title: const Text('Календарь (ЛР3)')),
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Это вторая страница!', style: TextStyle(fontSize: 24)),
-            const SizedBox(height: 20),
-
-            // ✅ Возврат (Navigator.pop)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Назад (Navigator.pop)'),
-            ),
             const SizedBox(height: 10),
-
-            // ✅ Возврат через GoRouter
-            ElevatedButton(
-              onPressed: () {
-                context.go('/');
+            TableCalendar(
+              firstDay: DateTime.utc(2020, 1, 1),
+              lastDay: DateTime.utc(2030, 12, 31),
+              focusedDay: focusedDay,
+              selectedDayPredicate: (day) => isSameDay(selectedDay, day),
+              onDaySelected: (selected, focused) {
+                setState(() {
+                  selectedDay = selected;
+                  focusedDay = focused;
+                });
               },
+              calendarFormat: CalendarFormat.month,
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+              ),
+              calendarStyle: const CalendarStyle(
+                selectedDecoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
+                ),
+                todayDecoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (selectedDay != null)
+              Text(
+                'Вы выбрали: ${selectedDay!.day}.${selectedDay!.month}.${selectedDay!.year}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            else
+              const Text(
+                'Выберите дату на календаре',
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+              ),
+            const Divider(height: 40, thickness: 1),
+            ElevatedButton(
+              onPressed: () => context.go('/home'),
               child: const Text('Назад (GoRouter)'),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
