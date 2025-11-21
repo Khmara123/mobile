@@ -38,7 +38,7 @@ dependencies:
   supabase_flutter: ^2.5.6
   table_calendar: ^3.2.0
   shared_preferences: ^2.2.3
-
+  http: 
 dev_dependencies:
   flutter_test:
     sdk: flutter

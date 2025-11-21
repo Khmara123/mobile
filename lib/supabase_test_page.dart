@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseTestPage extends StatefulWidget {
   const SupabaseTestPage({super.key});
@@ -10,37 +11,22 @@ class SupabaseTestPage extends StatefulWidget {
 }
 
 class _SupabaseTestPageState extends State<SupabaseTestPage> {
-  final String baseUrl = 'https://cirljvnifsjeqelaarjd.supabase.co';
+  final String baseUrl = 'https://frvexfoezbscdbcvuxas.supabase.co';
   final String apiKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmxqdm5pZnNqZXFlbGFhcmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MTAwOTIsImV4cCI6MjA3ODE4NjA5Mn0.VKCuMCeeLsbF80p1D7M5GNkZwN1___uxn57uV_9Tm94';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydmV4Zm9lemJzY2RiY3Z1eGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NDY4ODgsImV4cCI6MjA3NTMyMjg4OH0.XDr9MFxBMX0P42a4MwjstxtZeh_Caqdyrfpfr7d9ec8';
 
   List<dynamic> users = [];
 
   Future<void> loadUsers() async {
-    try {
-      final uri = Uri.parse('$baseUrl/rest/v1/users_demo?select=*');
-      final response = await http.get(
-        uri,
-        headers: {'apikey': apiKey, 'Authorization': 'Bearer $apiKey'},
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          users = jsonDecode(response.body);
-        });
-        print('✅ Данные успешно загружены: ${users.length}');
-      } else {
-        print('❌ Ошибка при загрузке: ${response.statusCode}');
-        print('Ответ: ${response.body}');
-      }
-    } catch (e) {
-      print('⚠️ Исключение при загрузке: $e');
-    }
+    print('loading users');
+    final data = await Supabase.instance.client.from('events').select();
+    print(data);
+    users = data;
   }
 
   Future<void> addUser() async {
     try {
-      final uri = Uri.parse('$baseUrl/rest/v1/users_demo');
+      final uri = Uri.parse('$baseUrl/rest/v1/events');
       final response = await http.post(
         uri,
         headers: {
@@ -66,7 +52,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
 
   Future<void> deleteUser(int id) async {
     try {
-      final uri = Uri.parse('$baseUrl/rest/v1/users_demo?id=eq.$id');
+      final uri = Uri.parse('$baseUrl/rest/v1/events?id=eq.$id');
       final response = await http.delete(
         uri,
         headers: {'apikey': apiKey, 'Authorization': 'Bearer $apiKey'},
@@ -105,8 +91,9 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final user = users[index];
+                print(user);
                 return ListTile(
-                  title: Text('${user['name']} (${user['age']})'),
+                  title: Text('${user['title']} (${user['date']})'),
                   subtitle: Text('ID: ${user['id']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
