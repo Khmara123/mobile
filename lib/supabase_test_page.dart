@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class SupabaseTestPage extends StatefulWidget {
   const SupabaseTestPage({super.key});
@@ -21,7 +23,10 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
     print('loading users');
     final data = await Supabase.instance.client.from('events').select();
     print(data);
-    users = data;
+
+    setState(() {
+      users = data;
+    });
   }
 
   Future<void> addUser() async {
@@ -35,11 +40,11 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
           'Content-Type': 'application/json',
           'Prefer': 'return=representation',
         },
-        body: jsonEncode({'name': 'New User', 'age': 21}),
+        body: jsonEncode({'title': 'New Event', 'date': '2025-01-01'}),
       );
 
       if (response.statusCode == 201) {
-        print('✅ Пользователь добавлен');
+        print('✅ Событие добавлено');
         await loadUsers();
       } else {
         print('❌ Ошибка при добавлении: ${response.statusCode}');
@@ -59,7 +64,7 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
       );
 
       if (response.statusCode == 204) {
-        print('🗑️ Пользователь удалён');
+        print('🗑️ Событие удалено');
         await loadUsers();
       } else {
         print('❌ Ошибка при удалении: ${response.statusCode}');
@@ -79,32 +84,53 @@ class _SupabaseTestPageState extends State<SupabaseTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Supabase Demo')),
+      appBar: AppBar(title: const Text('Список фестивалей')),
+
+      /// 🔥 НИЖНЯЯ ПАНЕЛЬ ТЕПЕРЬ ЕСТЬ!
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 2, // мы на странице событий
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/second');
+          if (index == 2) context.go('/supabase'); // текущая
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Календарь',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'События'),
+        ],
+      ),
+
       body: users.isEmpty
-          ? const Center(
-              child: Text(
-                'Нет данных (возможно, нет доступа к таблице)',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
-                final user = users[index];
-                print(user);
+                final event = users[index];
+
                 return ListTile(
-                  title: Text('${user['title']} (${user['date']})'),
-                  subtitle: Text('ID: ${user['id']}'),
+                  title: Text('${event['title']}'),
+                  subtitle: Text('Дата: ${event['date']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => deleteUser(user['id']),
+                    onPressed: () => deleteUser(event['id']),
                   ),
+
+                  /// 👉 При нажатии — переход на DetailApp через GoRouter
+                  onTap: () {
+                    final id = event['id'];
+                    context.go('/detail/$id');
+                  },
                 );
               },
             ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: addUser,
-        child: const Icon(Icons.add),
+        onPressed: loadUsers,
+        child: const Icon(Icons.refresh),
       ),
     );
   }
